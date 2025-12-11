@@ -7,7 +7,7 @@
 @layer base {
   :root {
     /* Sycure.ai Brand Colors - Clean, Minimal */
-    --background: 210 20% 98%;
+    --background: 0 0% 100%;
     --foreground: 215 35% 15%;
 
     --card: 0 0% 100%;
