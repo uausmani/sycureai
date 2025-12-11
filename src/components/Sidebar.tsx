@@ -8,7 +8,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: "AI", icon: <Brain className="w-5 h-5" />, id: "ai" },
+  { label: "AI & ROBOTICS", icon: <Brain className="w-5 h-5" />, id: "ai" },
   { label: "CYBERSECURITY", icon: <Shield className="w-5 h-5" />, id: "cybersecurity" },
   { label: "BTC", icon: <Bitcoin className="w-5 h-5" />, id: "btc" },
   { label: "QUANTUM", icon: <Atom className="w-5 h-5" />, id: "quantum" },
