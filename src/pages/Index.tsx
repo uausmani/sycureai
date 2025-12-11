@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Sidebar } from "@/components/Sidebar";
 import { TopicCard } from "@/components/TopicCard";
+import { ContactForm } from "@/components/ContactForm";
 
 interface Topic {
   title: string;
@@ -33,13 +34,14 @@ const topics: Topic[] = [
 ];
 
 const Index = () => {
-  const [activeSection, setActiveSection] = useState<string>("ai");
+  const [activeSection, setActiveSection] = useState<string>("all");
 
   const filteredTopics =
-    activeSection === "connect"
+    activeSection === "all"
       ? topics
       : topics.filter((t) => t.section === activeSection);
 
+  const showContactForm = activeSection === "connect";
   const displayTopics = filteredTopics.length > 0 ? filteredTopics : topics;
 
   return (
@@ -61,16 +63,20 @@ const Index = () => {
               />
             </nav>
 
-            {/* Topic Cards */}
+            {/* Topic Cards or Contact Form */}
             <section className="flex-1 space-y-6" aria-label="Topics">
-              {displayTopics.map((topic, index) => (
-                <TopicCard
-                  key={topic.title}
-                  title={topic.title}
-                  subtitle={topic.subtitle}
-                  index={index}
-                />
-              ))}
+              {showContactForm ? (
+                <ContactForm />
+              ) : (
+                displayTopics.map((topic, index) => (
+                  <TopicCard
+                    key={topic.title}
+                    title={topic.title}
+                    subtitle={topic.subtitle}
+                    index={index}
+                  />
+                ))
+              )}
             </section>
           </div>
 
