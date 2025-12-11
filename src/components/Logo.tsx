@@ -1,4 +1,4 @@
-import sycureLogo from "@/assets/sycure-logo.png";
+import sycureLogo from "@/assets/sycure-logo.webp";
 
 interface LogoProps {
   onClick?: () => void;
@@ -16,6 +16,9 @@ export function Logo({ onClick }: LogoProps) {
           src={sycureLogo} 
           alt="Sycure.ai - AI, Cybersecurity, Bitcoin & Quantum Insights" 
           className="h-24 md:h-32 w-auto"
+          width={224}
+          height={128}
+          fetchPriority="high"
         />
       </button>
     </div>
