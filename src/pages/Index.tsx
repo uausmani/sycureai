@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Sidebar } from "@/components/Sidebar";
-import { TopicCard } from "@/components/TopicCard";
+import { TopicAccordion } from "@/components/TopicAccordion";
 import { ContactForm } from "@/components/ContactForm";
+
+interface TopicLink {
+  title: string;
+  url?: string;
+}
 
 interface Topic {
   title: string;
   subtitle: string;
   section: string;
+  links: TopicLink[];
 }
 
 const topics: Topic[] = [
@@ -15,21 +21,41 @@ const topics: Topic[] = [
     title: "AI INSIGHTS",
     subtitle: "Is generative AI the next cyber threat?",
     section: "ai",
+    links: [
+      { title: "Understanding Large Language Models" },
+      { title: "AI in Cybersecurity: Friend or Foe?" },
+      { title: "The Future of Generative AI" },
+    ],
   },
   {
     title: "CYBERSECURITY PULSE",
     subtitle: "New exploits as we go",
     section: "cybersecurity",
+    links: [
+      { title: "Latest Zero-Day Vulnerabilities" },
+      { title: "Ransomware Trends 2024" },
+      { title: "Securing Your Digital Identity" },
+    ],
   },
   {
     title: "BITCOIN",
     subtitle: "Current and future price action",
     section: "btc",
+    links: [
+      { title: "Bitcoin Market Analysis" },
+      { title: "Institutional Adoption Updates" },
+      { title: "Bitcoin Halving Impact" },
+    ],
   },
   {
     title: "QUANTUM COMPUTING",
     subtitle: "Upcoming advances",
     section: "quantum",
+    links: [
+      { title: "Quantum Supremacy Explained" },
+      { title: "Post-Quantum Cryptography" },
+      { title: "Quantum Computing Breakthroughs" },
+    ],
   },
 ];
 
@@ -44,13 +70,17 @@ const Index = () => {
   const showContactForm = activeSection === "connect";
   const displayTopics = filteredTopics.length > 0 ? filteredTopics : topics;
 
+  const handleLogoClick = () => {
+    setActiveSection("all");
+  };
+
   return (
     <>
       <main className="min-h-screen bg-background">
         <div className="container mx-auto px-6 py-8 md:py-12 max-w-6xl">
           {/* Header */}
           <header className="mb-12 md:mb-16">
-            <Logo />
+            <Logo onClick={handleLogoClick} />
           </header>
 
           {/* Main Content */}
@@ -63,16 +93,17 @@ const Index = () => {
               />
             </nav>
 
-            {/* Topic Cards or Contact Form */}
+            {/* Topic Accordions or Contact Form */}
             <section className="flex-1 space-y-6" aria-label="Topics">
               {showContactForm ? (
                 <ContactForm />
               ) : (
                 displayTopics.map((topic, index) => (
-                  <TopicCard
+                  <TopicAccordion
                     key={topic.title}
                     title={topic.title}
                     subtitle={topic.subtitle}
+                    links={topic.links}
                     index={index}
                   />
                 ))
