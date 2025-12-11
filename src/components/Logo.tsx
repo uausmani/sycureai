@@ -15,7 +15,7 @@ export function Logo({ onClick }: LogoProps) {
         <img 
           src={sycureLogo} 
           alt="Sycure.ai - AI, Cybersecurity, Bitcoin & Quantum Insights" 
-          className="h-[22px] md:h-[28px] w-auto"
+          className="h-24 md:h-32 w-auto"
         />
       </button>
     </div>
