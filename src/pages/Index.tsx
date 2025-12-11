@@ -24,7 +24,7 @@ const topics: Topic[] = [
     links: [
       { title: "Understanding Large Language Models" },
       { title: "AI in Cybersecurity: Friend or Foe?" },
-      { title: "The Future of Generative AI" },
+      { title: "Humanoids & Generative AI" },
     ],
   },
   {
