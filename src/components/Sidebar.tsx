@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Brain, Shield, Bitcoin, Atom, Link2 } from "lucide-react";
+import { Brain, Shield, Bitcoin, Atom, Link2, Linkedin } from "lucide-react";
 
 interface NavItem {
   label: string;
@@ -10,10 +10,16 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "AI & ROBOTICS", icon: <Brain className="w-5 h-5" />, id: "ai" },
   { label: "CYBERSECURITY", icon: <Shield className="w-5 h-5" />, id: "cybersecurity" },
-  { label: "BTC", icon: <Bitcoin className="w-5 h-5" />, id: "btc" },
+  { label: "BITCOIN", icon: <Bitcoin className="w-5 h-5" />, id: "btc" },
   { label: "QUANTUM", icon: <Atom className="w-5 h-5" />, id: "quantum" },
   { label: "CONNECT", icon: <Link2 className="w-5 h-5" />, id: "connect" },
 ];
+
+const XIcon = () => (
+  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 interface SidebarProps {
   activeSection: string;
@@ -50,6 +56,28 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
           <span>{item.label}</span>
         </button>
       ))}
+      
+      {/* Social Icons */}
+      <div className="flex gap-3 mt-2 ml-2 opacity-0 animate-fade-in-left" style={{ animationDelay: '500ms' }}>
+        <a
+          href="https://www.linkedin.com/in/usmananzaar/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-2 rounded-full border-2 border-border bg-card hover:border-primary/50 hover:bg-accent/50 transition-all duration-300 text-muted-foreground hover:text-primary"
+          aria-label="LinkedIn"
+        >
+          <Linkedin className="w-5 h-5" />
+        </a>
+        <a
+          href="https://x.com/UsmanAnzaar"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-2 rounded-full border-2 border-border bg-card hover:border-primary/50 hover:bg-accent/50 transition-all duration-300 text-muted-foreground hover:text-primary"
+          aria-label="X (Twitter)"
+        >
+          <XIcon />
+        </a>
+      </div>
     </aside>
   );
 }

@@ -28,8 +28,8 @@ const topics: Topic[] = [
     ],
   },
   {
-    title: "CYBERSECURITY PULSE",
-    subtitle: "New exploits as we go",
+    title: "CYBERSECURITY",
+    subtitle: "REAL TIME THREAT INTELLIGENCE",
     section: "cybersecurity",
     links: [
       { title: "Latest Zero-Day Vulnerabilities" },
@@ -39,7 +39,7 @@ const topics: Topic[] = [
   },
   {
     title: "BITCOIN",
-    subtitle: "Current and future price action",
+    subtitle: "SECURITY AND THE FUTURE",
     section: "btc",
     links: [
       { title: "Bitcoin Market Analysis" },
