@@ -2,18 +2,20 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Send } from "lucide-react";
 
 export function ContactForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!name.trim() || !email.trim()) {
+    if (!name.trim() || !email.trim() || !message.trim()) {
       toast({
         title: "Please fill in all fields",
         variant: "destructive",
@@ -31,6 +33,7 @@ export function ContactForm() {
       });
       setName("");
       setEmail("");
+      setMessage("");
       setIsSubmitting(false);
     }, 1000);
   };
@@ -70,6 +73,19 @@ export function ContactForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="border-2 border-border rounded-xl px-4 py-3 bg-background focus:border-primary transition-colors"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="message" className="text-sm font-medium text-foreground">
+            Message
+          </Label>
+          <Textarea
+            id="message"
+            placeholder="Your message..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            className="border-2 border-border rounded-xl px-4 py-3 bg-background focus:border-primary transition-colors min-h-[100px] resize-none"
           />
         </div>
         
