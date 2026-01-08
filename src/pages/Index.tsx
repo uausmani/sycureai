@@ -3,8 +3,6 @@ import { Logo } from "@/components/Logo";
 import { Sidebar } from "@/components/Sidebar";
 import { TopicAccordion } from "@/components/TopicAccordion";
 import { ContactForm } from "@/components/ContactForm";
-import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
 
 interface TopicLink {
   title: string;
@@ -81,14 +79,8 @@ const Index = () => {
       <main className="min-h-screen bg-background">
         <div className="container mx-auto px-6 py-8 md:py-12 max-w-6xl">
           {/* Header */}
-          <header className="mb-12 md:mb-16 flex items-center justify-between">
+          <header className="mb-12 md:mb-16">
             <Logo onClick={handleLogoClick} />
-            <Button asChild variant="outline" size="sm" className="gap-2">
-              <a href="/AllElectricCars.xlsx" download>
-                <Download className="h-4 w-4" />
-                Download
-              </a>
-            </Button>
           </header>
 
           {/* Main Content */}
