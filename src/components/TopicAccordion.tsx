@@ -45,6 +45,8 @@ export function TopicAccordion({ title, subtitle, links, index }: TopicAccordion
                 <li key={i}>
                   <a
                     href={link.url || "#"}
+                    target={link.url ? "_blank" : undefined}
+                    rel={link.url ? "noopener noreferrer" : undefined}
                     className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm tracking-wide"
                   >
                     {link.title}

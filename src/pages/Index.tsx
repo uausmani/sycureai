@@ -3,6 +3,7 @@ import { Logo } from "@/components/Logo";
 import { Sidebar } from "@/components/Sidebar";
 import { TopicAccordion } from "@/components/TopicAccordion";
 import { ContactForm } from "@/components/ContactForm";
+import { useHackerNewsLinks } from "@/hooks/useHackerNewsLinks";
 
 interface TopicLink {
   title: string;
@@ -61,14 +62,31 @@ const topics: Topic[] = [
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState<string>("all");
+  const { links: hackerNewsLinks } = useHackerNewsLinks();
+
+  // Override cybersecurity links with live data when available
+  const getTopics = () => {
+    if (hackerNewsLinks.length === 0) return topics;
+    return topics.map((topic) => {
+      if (topic.section === "cybersecurity") {
+        return {
+          ...topic,
+          links: hackerNewsLinks.map((l) => ({ title: l.title, url: l.url })),
+        };
+      }
+      return topic;
+    });
+  };
+
+  const currentTopics = getTopics();
 
   const filteredTopics =
     activeSection === "all"
-      ? topics
-      : topics.filter((t) => t.section === activeSection);
+      ? currentTopics
+      : currentTopics.filter((t) => t.section === activeSection);
 
   const showContactForm = activeSection === "connect";
-  const displayTopics = filteredTopics.length > 0 ? filteredTopics : topics;
+  const displayTopics = filteredTopics.length > 0 ? filteredTopics : currentTopics;
 
   const handleLogoClick = () => {
     setActiveSection("all");
