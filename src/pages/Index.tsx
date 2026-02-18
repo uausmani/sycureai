@@ -1,92 +1,82 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Logo } from "@/components/Logo";
 import { Sidebar } from "@/components/Sidebar";
 import { TopicAccordion } from "@/components/TopicAccordion";
 import { ContactForm } from "@/components/ContactForm";
 import { useHackerNewsLinks } from "@/hooks/useHackerNewsLinks";
-
-interface TopicLink {
-  title: string;
-  url?: string;
-}
+import { fetchNewsForSection, type NewsLink } from "@/data/newsData";
 
 interface Topic {
   title: string;
   subtitle: string;
   section: string;
-  links: TopicLink[];
+  links: NewsLink[];
+  lastUpdated?: string;
 }
 
-const topics: Topic[] = [
-  {
-    title: "AI INSIGHTS",
-    subtitle: "Is generative AI the next cyber threat?",
-    section: "ai",
-    links: [
-      { title: "Understanding Large Language Models" },
-      { title: "AI in Cybersecurity: Friend or Foe?" },
-      { title: "Humanoids & Generative AI" },
-    ],
-  },
-  {
-    title: "CYBERSECURITY",
-    subtitle: "REAL TIME THREAT INTELLIGENCE",
-    section: "cybersecurity",
-    links: [
-      { title: "Latest Zero-Day Vulnerabilities" },
-      { title: "Ransomware Trends 2024" },
-      { title: "Securing Your Digital Identity" },
-    ],
-  },
-  {
-    title: "BITCOIN",
-    subtitle: "SECURITY AND THE FUTURE",
-    section: "btc",
-    links: [
-      { title: "Bitcoin Market Analysis" },
-      { title: "Institutional Adoption Updates" },
-      { title: "Bitcoin Halving Impact" },
-    ],
-  },
-  {
-    title: "QUANTUM COMPUTING",
-    subtitle: "Upcoming advances",
-    section: "quantum",
-    links: [
-      { title: "Quantum Supremacy Explained" },
-      { title: "Post-Quantum Cryptography" },
-      { title: "Quantum Computing Breakthroughs" },
-    ],
-  },
+const topicMeta = [
+  { title: "AI INSIGHTS", subtitle: "Is generative AI the next cyber threat?", section: "ai" },
+  { title: "CYBERSECURITY", subtitle: "REAL TIME THREAT INTELLIGENCE", section: "cybersecurity" },
+  { title: "BITCOIN", subtitle: "SECURITY AND THE FUTURE", section: "btc" },
+  { title: "QUANTUM COMPUTING", subtitle: "Upcoming advances", section: "quantum" },
 ];
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState<string>("all");
+  const [topicData, setTopicData] = useState<Record<string, { links: NewsLink[]; lastUpdated: string }>>({});
+  const [refreshing, setRefreshing] = useState<Record<string, boolean>>({});
   const { links: hackerNewsLinks } = useHackerNewsLinks();
 
-  // Override cybersecurity links with live data when available
-  const getTopics = () => {
-    if (hackerNewsLinks.length === 0) return topics;
-    return topics.map((topic) => {
-      if (topic.section === "cybersecurity") {
-        return {
-          ...topic,
-          links: hackerNewsLinks.map((l) => ({ title: l.title, url: l.url })),
-        };
-      }
-      return topic;
+  // Load mock data for all sections on mount
+  useEffect(() => {
+    topicMeta.forEach(async (t) => {
+      const data = await fetchNewsForSection(t.section);
+      setTopicData((prev) => ({
+        ...prev,
+        [t.section]: { links: data.links, lastUpdated: data.lastUpdated },
+      }));
     });
-  };
+  }, []);
 
-  const currentTopics = getTopics();
+  const handleRefresh = useCallback(async (section: string) => {
+    setRefreshing((prev) => ({ ...prev, [section]: true }));
+    try {
+      const data = await fetchNewsForSection(section);
+      setTopicData((prev) => ({
+        ...prev,
+        [section]: { links: data.links, lastUpdated: new Date().toISOString() },
+      }));
+    } finally {
+      setRefreshing((prev) => ({ ...prev, [section]: false }));
+    }
+  }, []);
+
+  // Build final topics, overriding cybersecurity with live HN data when available
+  const topics: Topic[] = topicMeta.map((meta) => {
+    const sectionData = topicData[meta.section];
+    let links = sectionData?.links ?? [];
+    let lastUpdated = sectionData?.lastUpdated;
+
+    if (meta.section === "cybersecurity" && hackerNewsLinks.length > 0) {
+      links = hackerNewsLinks.map((l) => ({
+        title: l.title,
+        sourceName: "The Hacker News",
+        url: l.url,
+        timestamp: new Date().toISOString(),
+      }));
+      lastUpdated = new Date().toISOString();
+    }
+
+    return { ...meta, links, lastUpdated };
+  });
 
   const filteredTopics =
     activeSection === "all"
-      ? currentTopics
-      : currentTopics.filter((t) => t.section === activeSection);
+      ? topics
+      : topics.filter((t) => t.section === activeSection);
 
   const showContactForm = activeSection === "connect";
-  const displayTopics = filteredTopics.length > 0 ? filteredTopics : currentTopics;
+  const displayTopics = filteredTopics.length > 0 ? filteredTopics : topics;
 
   const handleLogoClick = () => {
     setActiveSection("all");
@@ -123,6 +113,9 @@ const Index = () => {
                     subtitle={topic.subtitle}
                     links={topic.links}
                     index={index}
+                    lastUpdated={topic.lastUpdated}
+                    onRefresh={() => handleRefresh(topic.section)}
+                    isRefreshing={refreshing[topic.section] ?? false}
                   />
                 ))
               )}
