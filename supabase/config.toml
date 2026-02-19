@@ -1,1 +1,4 @@
 project_id = "hghmjsjouyehzggpvkbp"
+
+[functions.fetch-intelligence]
+verify_jwt = false
