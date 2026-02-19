@@ -8,7 +8,7 @@ const corsHeaders = {
 const CATEGORY_QUERIES: Record<string, string> = {
   ai: '"LLM security vulnerability" OR "Adversarial AI" OR "AI exploit"',
   cybersecurity: '"Latest CVE" OR "Ransomware alert" OR "Zero-Day" OR "Vulnerability"',
-  btc: '"Crypto exchange hack" OR "Blockchain vulnerability" OR "Bitcoin exploit"',
+  btc: 'Bitcoin hack OR crypto vulnerability OR blockchain security OR cryptocurrency exploit',
   quantum: '"Post-Quantum Cryptography" OR "NIST PQC" OR "quantum computing security"',
 };
 
