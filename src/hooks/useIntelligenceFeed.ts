@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { NewsLink } from "@/data/newsData";
 
 const CACHE_KEY_PREFIX = "intelligence_feed_";
-const CACHE_DURATION = 4 * 60 * 60 * 1000; // 4 hours
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 
 interface CachedData {
   articles: NewsLink[];
