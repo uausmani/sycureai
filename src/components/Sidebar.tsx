@@ -60,7 +60,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
       {/* Social Icons */}
       <div className="flex gap-3 mt-2 ml-2 opacity-0 animate-fade-in-left" style={{ animationDelay: '500ms' }}>
         <a
-          href="https://www.linkedin.com/in/usmananzaar/"
+          href="https://www.linkedin.com/company/sycureai/"
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 rounded-full border-2 border-border bg-card hover:border-primary/50 hover:bg-accent/50 transition-all duration-300 text-muted-foreground hover:text-primary"
