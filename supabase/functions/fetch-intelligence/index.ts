@@ -6,11 +6,32 @@ const corsHeaders = {
 };
 
 const CATEGORY_QUERIES: Record<string, string> = {
-  ai: 'AI security OR LLM vulnerability OR adversarial AI OR AI exploit OR machine learning attack',
-  cybersecurity: '"Latest CVE" OR "Ransomware alert" OR "Zero-Day" OR "Vulnerability"',
-  btc: 'Bitcoin hack OR crypto vulnerability OR blockchain security OR cryptocurrency exploit',
-  quantum: '"Post-Quantum Cryptography" OR "NIST PQC" OR "quantum computing security"',
+  ai: '("LLM" OR "Generative AI") AND ("vulnerability" OR "exploit" OR "jailbreak" OR "prompt injection")',
+  cybersecurity: '("CVE-2025" OR "CVE-2026" OR "zero-day" OR "ransomware") NOT "promotion"',
+  btc: '("Bitcoin" OR "Ethereum") AND ("exploit" OR "hack" OR "drainer" OR "protocol vulnerability")',
+  quantum: '("Post-Quantum Cryptography" OR "PQC" OR "Shor\'s algorithm") AND ("security" OR "standards")',
 };
+
+const HIGH_PRIORITY_KEYWORDS = ['CVE-', 'Vulnerability', 'Exploit', 'Zero-Day', 'Patch', 'Security Advisory'];
+const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
+
+function isRelevant(article: any): boolean {
+  const text = `${article.title || ''} ${article.description || ''}`.toLowerCase();
+  return HIGH_PRIORITY_KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
+}
+
+function isRecent(article: any): boolean {
+  if (!article.publishedAt) return false;
+  return Date.now() - new Date(article.publishedAt).getTime() < TWO_DAYS_MS;
+}
+
+function isValidTitle(article: any): boolean {
+  const title = (article.title || '').trim();
+  if (!title) return false;
+  if (/^Home\s*-\s*/i.test(title)) return false;
+  if (title === '[Removed]') return false;
+  return true;
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -37,7 +58,7 @@ serve(async (req) => {
       q: query,
       language: 'en',
       sortBy: 'publishedAt',
-      pageSize: '3',
+      pageSize: '20',
       apiKey,
     });
 
@@ -48,12 +69,15 @@ serve(async (req) => {
       throw new Error(`NewsAPI error [${response.status}]: ${JSON.stringify(data)}`);
     }
 
-    const articles = (data.articles || []).map((a: any) => ({
-      title: a.title,
-      sourceName: a.source?.name || 'Unknown',
-      url: a.url,
-      timestamp: a.publishedAt,
-    }));
+    const articles = (data.articles || [])
+      .filter((a: any) => isValidTitle(a) && isRecent(a) && isRelevant(a))
+      .slice(0, 3)
+      .map((a: any) => ({
+        title: a.title,
+        sourceName: a.source?.name || 'Unknown',
+        url: a.url,
+        timestamp: a.publishedAt,
+      }));
 
     return new Response(JSON.stringify({ success: true, articles, fetchedAt: new Date().toISOString() }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
