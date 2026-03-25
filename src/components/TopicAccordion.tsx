@@ -105,12 +105,24 @@ export function TopicAccordion({
                           <span className="text-sm tracking-wide text-foreground group-hover/link:text-primary transition-colors duration-200 leading-snug">
                             {link.title}
                           </span>
-                          <span className="text-xs text-muted-foreground font-light tracking-wide">
-                            {link.sourceName}
-                            {link.timestamp && (
-                              <> · {timeAgo(link.timestamp)}</>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground font-light tracking-wide">
+                              {link.sourceName}
+                              {link.timestamp && (
+                                <> · {timeAgo(link.timestamp)}</>
+                              )}
+                            </span>
+                            {link.via && (
+                              <span className={cn(
+                                "text-[10px] font-medium tracking-wider uppercase px-1.5 py-0.5 rounded",
+                                link.via === 'Tree News'
+                                  ? "bg-accent text-accent-foreground"
+                                  : "bg-muted text-muted-foreground"
+                              )}>
+                                via {link.via}
+                              </span>
                             )}
-                          </span>
+                          </div>
                         </div>
                       </a>
                     </li>

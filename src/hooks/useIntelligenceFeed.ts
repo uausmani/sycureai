@@ -50,10 +50,17 @@ export function useIntelligenceFeed(category: string) {
 
       if (data?.success && data.articles?.length > 0) {
         const filtered = data.articles.filter(passesHardFilter);
-        setLinks(filtered);
-        setIsLive(filtered.length > 0);
+        const withVia = filtered.map((a: any) => ({
+          title: a.title,
+          sourceName: a.sourceName,
+          url: a.url,
+          timestamp: a.timestamp,
+          via: a.via || 'NewsAPI',
+        }));
+        setLinks(withVia);
+        setIsLive(withVia.length > 0);
         localStorage.setItem(cacheKey, JSON.stringify({
-          articles: filtered,
+          articles: withVia,
           fetchedAt: data.fetchedAt,
         }));
       }
