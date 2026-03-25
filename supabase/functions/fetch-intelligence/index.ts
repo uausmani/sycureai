@@ -118,7 +118,7 @@ async function fetchTreeOfAlpha(category: string): Promise<UnifiedArticle[]> {
       .map((item: any) => ({
         title: item.title || item.body?.substring(0, 100) || 'Untitled',
         sourceName: item.source || 'Tree News',
-        url: item.link || `https://news.treeofalpha.com`,
+        url: item.link || item.url || `https://news.treeofalpha.com`,
         timestamp: item.time ? new Date(item.time).toISOString() : new Date().toISOString(),
         via: 'Tree News' as const,
       }));
