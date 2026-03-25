@@ -49,10 +49,11 @@ export function useIntelligenceFeed(category: string) {
       if (error) throw error;
 
       if (data?.success && data.articles?.length > 0) {
-        setLinks(data.articles);
-        setIsLive(true);
+        const filtered = data.articles.filter(passesHardFilter);
+        setLinks(filtered);
+        setIsLive(filtered.length > 0);
         localStorage.setItem(cacheKey, JSON.stringify({
-          articles: data.articles,
+          articles: filtered,
           fetchedAt: data.fetchedAt,
         }));
       }
