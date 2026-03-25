@@ -3,6 +3,7 @@ export interface NewsLink {
   sourceName: string;
   url: string;
   timestamp: string; // ISO string
+  via?: 'NewsAPI' | 'Tree News';
 }
 
 export interface CategoryNews {

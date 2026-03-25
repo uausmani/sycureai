@@ -12,25 +12,136 @@ const CATEGORY_QUERIES: Record<string, string> = {
   quantum: '("PQC" OR "Post-Quantum") AND ("security" OR "standard")',
 };
 
+// Categories that should also pull from Tree of Alpha
+const TREE_CATEGORIES = ['btc', 'quantum'];
+
 const HIGH_PRIORITY_KEYWORDS = ['CVE-', 'Vulnerability', 'Exploit', 'Zero-Day', 'Patch', 'Security Advisory'];
 const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
 
-function isRelevant(article: any): boolean {
-  const text = `${article.title || ''} ${article.description || ''}`.toLowerCase();
-  return HIGH_PRIORITY_KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
+function matchesKeywords(text: string): boolean {
+  const lower = text.toLowerCase();
+  return HIGH_PRIORITY_KEYWORDS.some(kw => lower.includes(kw.toLowerCase()));
 }
 
-function isRecent(article: any): boolean {
-  if (!article.publishedAt) return false;
-  return Date.now() - new Date(article.publishedAt).getTime() < TWO_DAYS_MS;
+function isRecent(dateStr: string | number | undefined): boolean {
+  if (!dateStr) return false;
+  const ts = typeof dateStr === 'number' ? dateStr : new Date(dateStr).getTime();
+  return Date.now() - ts < TWO_DAYS_MS;
 }
 
-function isValidTitle(article: any): boolean {
-  const title = (article.title || '').trim();
-  if (!title) return false;
-  if (/^Home\s*-\s*/i.test(title)) return false;
-  if (title === '[Removed]') return false;
+function isValidTitle(title: string | undefined): boolean {
+  const t = (title || '').trim();
+  if (!t) return false;
+  if (/^Home\s*-\s*/i.test(t)) return false;
+  if (t === '[Removed]') return false;
   return true;
+}
+
+interface UnifiedArticle {
+  title: string;
+  sourceName: string;
+  url: string;
+  timestamp: string;
+  via: 'NewsAPI' | 'Tree News';
+}
+
+async function fetchNewsAPI(query: string, apiKey: string): Promise<UnifiedArticle[]> {
+  try {
+    const params = new URLSearchParams({
+      q: query,
+      language: 'en',
+      sortBy: 'publishedAt',
+      pageSize: '20',
+      apiKey,
+    });
+
+    const response = await fetch(`https://newsapi.org/v2/everything?${params}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('NewsAPI error:', data);
+      return [];
+    }
+
+    return (data.articles || [])
+      .filter((a: any) =>
+        isValidTitle(a.title) &&
+        isRecent(a.publishedAt) &&
+        matchesKeywords(`${a.title || ''} ${a.description || ''}`)
+      )
+      .slice(0, 5)
+      .map((a: any) => ({
+        title: a.title,
+        sourceName: a.source?.name || 'Unknown',
+        url: a.url,
+        timestamp: a.publishedAt,
+        via: 'NewsAPI' as const,
+      }));
+  } catch (err) {
+    console.error('NewsAPI fetch failed:', err);
+    return [];
+  }
+}
+
+async function fetchTreeOfAlpha(category: string): Promise<UnifiedArticle[]> {
+  try {
+    const treeKey = Deno.env.get('TREE_OF_ALPHA_KEY');
+    const headers: Record<string, string> = {};
+    if (treeKey) {
+      headers['Authorization'] = `Bearer ${treeKey}`;
+    }
+
+    const response = await fetch('https://news.treeofalpha.com/api/news?limit=50', { headers });
+    if (!response.ok) {
+      console.error('Tree of Alpha error:', response.status);
+      return [];
+    }
+
+    const items: any[] = await response.json();
+
+    // Category-specific keyword filters for Tree of Alpha
+    const categoryKeywords: Record<string, string[]> = {
+      btc: ['bitcoin', 'btc', 'ethereum', 'eth', 'crypto', 'hack', 'exploit', 'drainer', 'defi', 'vulnerability'],
+      quantum: ['quantum', 'pqc', 'post-quantum', 'cryptography', 'nist', 'encryption'],
+    };
+
+    const keywords = categoryKeywords[category] || [];
+
+    return items
+      .filter((item: any) => {
+        const text = `${item.title || ''} ${item.body || ''}`.toLowerCase();
+        const hasKeyword = keywords.some(kw => text.includes(kw));
+        const recentEnough = item.time ? isRecent(item.time) : false;
+        return hasKeyword && recentEnough && isValidTitle(item.title || item.body?.substring(0, 80));
+      })
+      .slice(0, 5)
+      .map((item: any) => ({
+        title: item.title || item.body?.substring(0, 100) || 'Untitled',
+        sourceName: item.source || 'Tree News',
+        url: item.link || `https://news.treeofalpha.com`,
+        timestamp: item.time ? new Date(item.time).toISOString() : new Date().toISOString(),
+        via: 'Tree News' as const,
+      }));
+  } catch (err) {
+    console.error('Tree of Alpha fetch failed:', err);
+    return [];
+  }
+}
+
+function deduplicateAndSort(articles: UnifiedArticle[]): UnifiedArticle[] {
+  // Deduplicate by normalized title
+  const seen = new Set<string>();
+  const unique = articles.filter(a => {
+    const key = a.title.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 60);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  // Sort by timestamp descending
+  unique.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+  return unique.slice(0, 6);
 }
 
 serve(async (req) => {
@@ -54,32 +165,23 @@ serve(async (req) => {
       throw new Error('NEWSAPI_KEY is not configured');
     }
 
-    const params = new URLSearchParams({
-      q: query,
-      language: 'en',
-      sortBy: 'publishedAt',
-      pageSize: '20',
-      apiKey,
-    });
+    // Build fetch promises based on category
+    const fetchers: Promise<UnifiedArticle[]>[] = [fetchNewsAPI(query, apiKey)];
 
-    const response = await fetch(`https://newsapi.org/v2/everything?${params}`);
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(`NewsAPI error [${response.status}]: ${JSON.stringify(data)}`);
+    if (TREE_CATEGORIES.includes(category)) {
+      fetchers.push(fetchTreeOfAlpha(category));
     }
 
-    const articles = (data.articles || [])
-      .filter((a: any) => isValidTitle(a) && isRecent(a) && isRelevant(a))
-      .slice(0, 3)
-      .map((a: any) => ({
-        title: a.title,
-        sourceName: a.source?.name || 'Unknown',
-        url: a.url,
-        timestamp: a.publishedAt,
-      }));
+    // Fetch all sources simultaneously
+    const results = await Promise.all(fetchers);
+    const merged = results.flat();
+    const articles = deduplicateAndSort(merged);
 
-    return new Response(JSON.stringify({ success: true, articles, fetchedAt: new Date().toISOString() }), {
+    return new Response(JSON.stringify({
+      success: true,
+      articles,
+      fetchedAt: new Date().toISOString(),
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
