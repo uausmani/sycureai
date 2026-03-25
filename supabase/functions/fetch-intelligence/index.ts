@@ -6,10 +6,10 @@ const corsHeaders = {
 };
 
 const CATEGORY_QUERIES: Record<string, string> = {
-  ai: '("LLM" OR "Generative AI") AND ("vulnerability" OR "exploit" OR "jailbreak" OR "prompt injection")',
-  cybersecurity: '("CVE-2025" OR "CVE-2026" OR "zero-day" OR "ransomware") NOT "promotion"',
-  btc: '("Bitcoin" OR "Ethereum") AND ("exploit" OR "hack" OR "drainer" OR "protocol vulnerability")',
-  quantum: '("Post-Quantum Cryptography" OR "PQC" OR "Shor\'s algorithm") AND ("security" OR "standards")',
+  ai: '("LLM" OR "GenAI") AND ("vulnerability" OR "exploit" OR "injection")',
+  cybersecurity: '("CVE-2025" OR "CVE-2026" OR "zero-day" OR "ransomware")',
+  btc: '("Bitcoin" OR "Ethereum") AND ("drainer" OR "hack" OR "exploit")',
+  quantum: '("PQC" OR "Post-Quantum") AND ("security" OR "standard")',
 };
 
 const HIGH_PRIORITY_KEYWORDS = ['CVE-', 'Vulnerability', 'Exploit', 'Zero-Day', 'Patch', 'Security Advisory'];

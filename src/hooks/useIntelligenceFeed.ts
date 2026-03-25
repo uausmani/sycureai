@@ -4,6 +4,13 @@ import type { NewsLink } from "@/data/newsData";
 
 const CACHE_KEY_PREFIX = "intelligence_feed_";
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+const HARD_FILTER_KEYWORDS = ['CVE-', 'Vulnerability', 'Exploit', 'Patch'];
+
+function passesHardFilter(article: NewsLink): boolean {
+  const text = `${article.title || ''} ${article.sourceName || ''}`.toLowerCase();
+  return HARD_FILTER_KEYWORDS.some(kw => text.toLowerCase().includes(kw.toLowerCase()));
+}
+
 
 interface CachedData {
   articles: NewsLink[];
