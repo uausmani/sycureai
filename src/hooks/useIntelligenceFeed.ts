@@ -4,6 +4,13 @@ import type { NewsLink } from "@/data/newsData";
 
 const CACHE_KEY_PREFIX = "intelligence_feed_";
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+const HARD_FILTER_KEYWORDS = ['CVE-', 'Vulnerability', 'Exploit', 'Patch'];
+
+function passesHardFilter(article: NewsLink): boolean {
+  const text = `${article.title || ''} ${article.sourceName || ''}`.toLowerCase();
+  return HARD_FILTER_KEYWORDS.some(kw => text.toLowerCase().includes(kw.toLowerCase()));
+}
+
 
 interface CachedData {
   articles: NewsLink[];
@@ -42,10 +49,11 @@ export function useIntelligenceFeed(category: string) {
       if (error) throw error;
 
       if (data?.success && data.articles?.length > 0) {
-        setLinks(data.articles);
-        setIsLive(true);
+        const filtered = data.articles.filter(passesHardFilter);
+        setLinks(filtered);
+        setIsLive(filtered.length > 0);
         localStorage.setItem(cacheKey, JSON.stringify({
-          articles: data.articles,
+          articles: filtered,
           fetchedAt: data.fetchedAt,
         }));
       }
