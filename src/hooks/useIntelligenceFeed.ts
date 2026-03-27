@@ -4,11 +4,17 @@ import type { NewsLink } from "@/data/newsData";
 
 const CACHE_KEY_PREFIX = "intelligence_feed_";
 const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
-const HARD_FILTER_KEYWORDS = ['CVE-', 'Vulnerability', 'Exploit', 'Patch'];
+const CATEGORY_KEYWORDS: Record<string, string[]> = {
+  ai: ['LLM', 'GenAI', 'generative ai', 'prompt injection', 'jailbreak', 'vulnerability', 'exploit', 'adversarial', 'AI security', 'machine learning'],
+  cybersecurity: ['CVE-', 'Vulnerability', 'Exploit', 'Zero-Day', 'Patch', 'ransomware', 'Security Advisory'],
+  btc: ['Bitcoin', 'Ethereum', 'crypto', 'hack', 'exploit', 'drainer', 'DeFi', 'blockchain'],
+  quantum: ['quantum', 'PQC', 'post-quantum', 'cryptography', 'NIST', 'encryption', 'lattice'],
+};
 
-function passesHardFilter(article: NewsLink): boolean {
+function passesHardFilter(article: NewsLink, category: string): boolean {
   const text = `${article.title || ''} ${article.sourceName || ''}`.toLowerCase();
-  return HARD_FILTER_KEYWORDS.some(kw => text.toLowerCase().includes(kw.toLowerCase()));
+  const keywords = CATEGORY_KEYWORDS[category] || [];
+  return keywords.some(kw => text.toLowerCase().includes(kw.toLowerCase()));
 }
 
 
