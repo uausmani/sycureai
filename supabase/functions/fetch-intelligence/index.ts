@@ -102,7 +102,8 @@ async function fetchTreeOfAlpha(category: string): Promise<UnifiedArticle[]> {
     // Category-specific keyword filters for Tree of Alpha
     const categoryKeywords: Record<string, string[]> = {
       btc: ['bitcoin', 'btc', 'ethereum', 'eth', 'crypto', 'hack', 'exploit', 'drainer', 'defi', 'vulnerability'],
-      quantum: ['quantum', 'pqc', 'post-quantum', 'cryptography', 'nist', 'encryption'],
+      quantum: ['quantum', 'pqc', 'post-quantum', 'cryptography', 'nist', 'encryption', 'lattice', 'qubit'],
+      ai: ['llm', 'genai', 'generative ai', 'prompt injection', 'jailbreak', 'machine learning', 'ai', 'gpt', 'openai', 'anthropic', 'deepfake'],
     };
 
     const keywords = categoryKeywords[category] || [];
