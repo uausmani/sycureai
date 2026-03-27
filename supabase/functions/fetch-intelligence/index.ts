@@ -13,9 +13,9 @@ const CATEGORY_QUERIES: Record<string, string> = {
 };
 
 // Categories that should also pull from Tree of Alpha
-const TREE_CATEGORIES = ['btc', 'quantum'];
+const TREE_CATEGORIES = ['btc', 'quantum', 'ai'];
 
-const HIGH_PRIORITY_KEYWORDS = ['CVE-', 'Vulnerability', 'Exploit', 'Zero-Day', 'Patch', 'Security Advisory'];
+const HIGH_PRIORITY_KEYWORDS = ['CVE-', 'Vulnerability', 'Exploit', 'Zero-Day', 'Patch', 'Security Advisory', 'LLM', 'GenAI', 'injection', 'jailbreak', 'quantum', 'PQC', 'ransomware', 'hack', 'drainer', 'crypto'];
 const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
 
 function matchesKeywords(text: string): boolean {
@@ -102,7 +102,8 @@ async function fetchTreeOfAlpha(category: string): Promise<UnifiedArticle[]> {
     // Category-specific keyword filters for Tree of Alpha
     const categoryKeywords: Record<string, string[]> = {
       btc: ['bitcoin', 'btc', 'ethereum', 'eth', 'crypto', 'hack', 'exploit', 'drainer', 'defi', 'vulnerability'],
-      quantum: ['quantum', 'pqc', 'post-quantum', 'cryptography', 'nist', 'encryption'],
+      quantum: ['quantum', 'pqc', 'post-quantum', 'cryptography', 'nist', 'encryption', 'lattice', 'qubit'],
+      ai: ['llm', 'genai', 'generative ai', 'prompt injection', 'jailbreak', 'machine learning', 'ai', 'gpt', 'openai', 'anthropic', 'deepfake'],
     };
 
     const keywords = categoryKeywords[category] || [];
