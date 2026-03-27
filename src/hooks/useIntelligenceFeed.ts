@@ -55,7 +55,7 @@ export function useIntelligenceFeed(category: string) {
       if (error) throw error;
 
       if (data?.success && data.articles?.length > 0) {
-        const filtered = data.articles.filter(passesHardFilter);
+        const filtered = data.articles.filter((a: any) => passesHardFilter(a, category));
         const withVia = filtered.map((a: any) => ({
           title: a.title,
           sourceName: a.sourceName,
