@@ -63,15 +63,6 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
         >
           <Linkedin className="w-5 h-5" />
         </a>
-        <a
-          href="https://x.com/UsmanAnzaar"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="p-2 rounded-full border-2 border-border bg-card hover:border-primary/50 hover:bg-accent/50 transition-all duration-300 text-muted-foreground hover:text-primary"
-          aria-label="X (Twitter)"
-        >
-          <XIcon />
-        </a>
       </div>
     </aside>
   );
