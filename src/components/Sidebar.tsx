@@ -15,11 +15,6 @@ const navItems: NavItem[] = [
   { label: "CONNECT", icon: <Link2 className="w-5 h-5" />, id: "connect" },
 ];
 
-const XIcon = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-  </svg>
-);
 
 interface SidebarProps {
   activeSection: string;
@@ -67,15 +62,6 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
           aria-label="LinkedIn"
         >
           <Linkedin className="w-5 h-5" />
-        </a>
-        <a
-          href="https://x.com/UsmanAnzaar"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="p-2 rounded-full border-2 border-border bg-card hover:border-primary/50 hover:bg-accent/50 transition-all duration-300 text-muted-foreground hover:text-primary"
-          aria-label="X (Twitter)"
-        >
-          <XIcon />
         </a>
       </div>
     </aside>
