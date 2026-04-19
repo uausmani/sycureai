@@ -6,7 +6,7 @@ import { ContactForm } from "@/components/ContactForm";
 import { useIntelligenceFeed } from "@/hooks/useIntelligenceFeed";
 
 const topicMeta = [
-  { title: "AI INSIGHTS", subtitle: "LLM Security & Adversarial AI", section: "ai" },
+  { title: "AI & ROBOTICS", subtitle: "AGENTIC SECURITY & AUTONOMOUS SYSTEMS", section: "ai" },
   { title: "CYBERSECURITY", subtitle: "CVEs, Exploits & Zero-Days", section: "cybersecurity" },
   { title: "BITCOIN", subtitle: "Crypto Hacks & Blockchain Vulnerabilities", section: "btc" },
   { title: "QUANTUM COMPUTING", subtitle: "Post-Quantum Cryptography & NIST PQC", section: "quantum" },
