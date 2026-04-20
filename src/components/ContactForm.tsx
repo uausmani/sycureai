@@ -69,6 +69,7 @@ export function ContactForm() {
       </p>
       
       <form onSubmit={handleSubmit} action="https://formspree.io/f/mqewldke" method="POST" className="space-y-6">
+        <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ display: "none" }} />
         <div className="space-y-2">
           <Label htmlFor="name" className="text-sm font-medium text-foreground">
             Name
