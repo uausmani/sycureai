@@ -68,13 +68,14 @@ export function ContactForm() {
         Stay updated on the latest in AI, cybersecurity, Bitcoin & quantum computing.
       </p>
       
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} action="https://formspree.io/f/mqewldke" method="POST" className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="name" className="text-sm font-medium text-foreground">
             Name
           </Label>
           <Input
             id="name"
+            name="name"
             type="text"
             placeholder="Your name"
             value={name}
@@ -82,34 +83,36 @@ export function ContactForm() {
             className="border-2 border-border rounded-xl px-4 py-3 bg-background focus:border-primary transition-colors"
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="email" className="text-sm font-medium text-foreground">
-            Email
+            Professional Email
           </Label>
           <Input
             id="email"
+            name="email"
             type="email"
-            placeholder="your@email.com"
+            placeholder="your@company.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="border-2 border-border rounded-xl px-4 py-3 bg-background focus:border-primary transition-colors"
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="message" className="text-sm font-medium text-foreground">
             Message
           </Label>
           <Textarea
             id="message"
+            name="message"
             placeholder="Your message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             className="border-2 border-border rounded-xl px-4 py-3 bg-background focus:border-primary transition-colors min-h-[100px] resize-none"
           />
         </div>
-        
+
         <Button
           type="submit"
           disabled={isSubmitting}
