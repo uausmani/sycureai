@@ -12,9 +12,9 @@ export function ContactForm() {
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!name.trim() || !email.trim() || !message.trim()) {
       toast({
         title: "Please fill in all fields",
@@ -24,18 +24,39 @@ export function ContactForm() {
     }
 
     setIsSubmitting(true);
-    
-    // Simulate submission
-    setTimeout(() => {
-      toast({
-        title: "Thank you for connecting!",
-        description: "We'll be in touch soon.",
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const response = await fetch("https://formspree.io/f/mqewldke", {
+        method: "POST",
+        body: formData,
+        headers: { Accept: "application/json" },
       });
-      setName("");
-      setEmail("");
-      setMessage("");
+
+      if (response.ok) {
+        toast({
+          title: "Thank you for connecting!",
+          description: "We'll be in touch soon.",
+        });
+        setName("");
+        setEmail("");
+        setMessage("");
+      } else {
+        toast({
+          title: "Something went wrong",
+          description: "Please try again later.",
+          variant: "destructive",
+        });
+      }
+    } catch {
+      toast({
+        title: "Network error",
+        description: "Please check your connection and try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (
