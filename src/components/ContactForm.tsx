@@ -12,9 +12,9 @@ export function ContactForm() {
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!name.trim() || !email.trim() || !message.trim()) {
       toast({
         title: "Please fill in all fields",
@@ -24,18 +24,39 @@ export function ContactForm() {
     }
 
     setIsSubmitting(true);
-    
-    // Simulate submission
-    setTimeout(() => {
-      toast({
-        title: "Thank you for connecting!",
-        description: "We'll be in touch soon.",
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const response = await fetch("https://formspree.io/f/mqewldke", {
+        method: "POST",
+        body: formData,
+        headers: { Accept: "application/json" },
       });
-      setName("");
-      setEmail("");
-      setMessage("");
+
+      if (response.ok) {
+        toast({
+          title: "Thank you for connecting!",
+          description: "We'll be in touch soon.",
+        });
+        setName("");
+        setEmail("");
+        setMessage("");
+      } else {
+        toast({
+          title: "Something went wrong",
+          description: "Please try again later.",
+          variant: "destructive",
+        });
+      }
+    } catch {
+      toast({
+        title: "Network error",
+        description: "Please check your connection and try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -47,13 +68,14 @@ export function ContactForm() {
         Stay updated on the latest in AI, cybersecurity, Bitcoin & quantum computing.
       </p>
       
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} action="https://formspree.io/f/mqewldke" method="POST" className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="name" className="text-sm font-medium text-foreground">
             Name
           </Label>
           <Input
             id="name"
+            name="name"
             type="text"
             placeholder="Your name"
             value={name}
@@ -61,34 +83,36 @@ export function ContactForm() {
             className="border-2 border-border rounded-xl px-4 py-3 bg-background focus:border-primary transition-colors"
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="email" className="text-sm font-medium text-foreground">
-            Email
+            Professional Email
           </Label>
           <Input
             id="email"
+            name="email"
             type="email"
-            placeholder="your@email.com"
+            placeholder="your@company.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="border-2 border-border rounded-xl px-4 py-3 bg-background focus:border-primary transition-colors"
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="message" className="text-sm font-medium text-foreground">
             Message
           </Label>
           <Textarea
             id="message"
+            name="message"
             placeholder="Your message..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             className="border-2 border-border rounded-xl px-4 py-3 bg-background focus:border-primary transition-colors min-h-[100px] resize-none"
           />
         </div>
-        
+
         <Button
           type="submit"
           disabled={isSubmitting}
